@@ -49,7 +49,7 @@ void fake_camera_sensor(struct media_v2_topology *topology)
   }
 }
 
-int ioctl (int fd, unsigned long int req, ...)
+int ioctl (int fd, int req, ...)
 {
   void *arg;
   va_list ap;
