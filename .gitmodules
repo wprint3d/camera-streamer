@@ -1,4 +1,5 @@
 [submodule "third_party/libdatachannel"]
 	path = third_party/libdatachannel
 	url = https://github.com/wprint3d/libdatachannel.git
+	branch = alpine
 	ignore = dirty
