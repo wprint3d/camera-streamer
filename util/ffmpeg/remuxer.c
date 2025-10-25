@@ -7,6 +7,12 @@
 static AVRational time_base = {1, 1000LL * 1000LL};
 static unsigned avio_ctx_buffer_size = 4096;
 
+static int write_packet_wrapper(void *opaque, uint8_t *buf, int buf_size)
+{
+    ffmpeg_remuxer_t *remuxer = (ffmpeg_remuxer_t *)opaque;
+    return remuxer->write_packet(remuxer->opaque, (const uint8_t *)buf, buf_size);
+}
+
 static int ffmpeg_remuxer_init_avcontext(AVFormatContext **context, ffmpeg_remuxer_t *remuxer, int output, ffmpeg_write_packet packet_out, ffmpeg_read_packet packet_in)
 {
   uint8_t *buffer = NULL;
@@ -20,7 +26,7 @@ static int ffmpeg_remuxer_init_avcontext(AVFormatContext **context, ffmpeg_remux
   buffer = av_malloc(buffer_size);
   if (!buffer)
     return AVERROR(ENOMEM);
-  avio = avio_alloc_context(buffer, buffer_size, output, remuxer->opaque, packet_in, packet_out, NULL);
+  avio = avio_alloc_context(buffer, buffer_size, output, remuxer, packet_in, write_packet_wrapper, NULL);
   if (!avio)
     goto error;
   if (output && (ret = avformat_alloc_output_context2(context, NULL, remuxer->video_format, NULL)) < 0)
